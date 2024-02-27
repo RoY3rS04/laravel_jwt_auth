@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Mail\RegisterUser;
 use App\Models\User;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Mail;
 class AuthController extends Controller
 {
     
-    public function login(RegisterUserRequest $request) {
+    public function store(RegisterUserRequest $request) {
 
         $data = $request->validated();
 
@@ -59,6 +60,63 @@ class AuthController extends Controller
             'ok' => true,
             'msg' => 'Email verified correctly'
         ]);
+    }
+    
+    public function login(LoginRequest $request) {
+
+        $data = $request->validated();
+
+        $user = User::where('email', '=', $data['email'])
+            ->firstOrFail();
+
+        if($user->email_verified_at === null) {
+            return response()->json([
+                'ok' => false,
+                'msg' => 'You must to verify your email first'
+            ], 400);
+        }
+
+        if(!Hash::check($data['password'], $user->password)) {
+            return response()->json([
+                'ok' => false,
+                'msg' => 'Incorrect password, please try again'
+            ], 400);
+        }
+
+        $token = Auth::login($user);
+
+        return response()->json([
+            'ok' => true,
+            'msg' => 'User logged in!',
+            'token' => $token
+        ]);
+    }
+
+    public function authUser(Request $request) {
+
+        try {
+            $user = Auth::userOrFail();
+        } catch (\Throwable $th) {
+            //todo bad response;
+        }
+
+        return response()->json([
+            'ok' => true,
+            'msg' => 'User retrieved correctly',
+            'user' => $user
+        ]);
+
+    }
+
+    public function logOut(Request $request) {
+
+        Auth::logout();
+
+        return response()->json([
+            'ok' => true,
+            'msg' => 'logged out correctly'
+        ]);
+
     }
 
 }

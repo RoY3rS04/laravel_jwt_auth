@@ -20,5 +20,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'store']);
 Route::patch('/verify_email/', [AuthController::class, 'verifyEmail']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/user', [AuthController::class, 'authUser']);
+Route::post('/user', [AuthController::class, 'logout']);

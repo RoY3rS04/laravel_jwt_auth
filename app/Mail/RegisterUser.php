@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterUser extends Mailable
 {
@@ -40,7 +41,7 @@ class RegisterUser extends Mailable
         return new Content(
             view: 'Mail.RegisterUser',
             with: [
-                'token' => auth()->tokenById($this->user->id)
+                'token' => Auth::tokenById($this->user->id)
             ]
         );
     }
