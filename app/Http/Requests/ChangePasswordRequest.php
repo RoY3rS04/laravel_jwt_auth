@@ -2,11 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
+use App\Rules\AuthPasswordRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class RegisterUserRequest extends FormRequest
+class ChangePasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +23,9 @@ class RegisterUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique(User::class)],
-            'password' => ['required', 'string', 'max:255'],
-            'password_confirm' => ['required', 'string', 'max:255', 'same:password']
+            'password' => ['required', 'string', 'max:255', new AuthPasswordRule],
+            'password_new' => ['required', 'string', 'max:255'],
+            'password_confirm' => ['required', 'string', 'max:255', 'same:password_new']
         ];
     }
 }

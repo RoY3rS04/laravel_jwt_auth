@@ -18,13 +18,6 @@ class AuthController extends Controller
 
         $data = $request->validated();
 
-        if ($data['password'] !== $data['password_confirm']) {
-            return response()->json([
-                'ok' => false,
-                'msg' => 'Password and Confirm Password must be equals'
-            ], 400);
-        }
-
         $user = User::create([
             ...$request->safe()->only('name', 'email'),
             'password' => Hash::make($data['password'])
@@ -66,8 +59,15 @@ class AuthController extends Controller
 
         $data = $request->validated();
 
-        $user = User::where('email', '=', $data['email'])
+        try {
+            $user = User::where('email', '=', $data['email'])
             ->firstOrFail();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'ok' => false,
+                'msg' => 'User not found'
+            ], 404);
+        }
 
         if($user->email_verified_at === null) {
             return response()->json([
@@ -94,10 +94,21 @@ class AuthController extends Controller
 
     public function authUser(Request $request) {
 
-        try {
-            $user = Auth::userOrFail();
-        } catch (\Throwable $th) {
-            //todo bad response;
+        $user = Auth::user();
+
+        if($user === null) {
+            try {
+                $payload = Auth::payload();
+
+                $user = User::findOrFail($payload['sub']);
+
+                Auth::login($user);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'ok' => false,
+                    'msg' => 'Invalid token'
+                ],400);
+            }
         }
 
         return response()->json([

@@ -28,3 +28,5 @@ Route::get('/user', [AuthController::class, 'authUser']);
 Route::post('/user', [AuthController::class, 'logout']);
 
 Route::patch('/user', [UserController::class, 'update']);
+Route::patch('/user/change-password', [UserController::class, 'changePassword']);
+Route::delete('/user', [UserController::class, 'destroy']);
