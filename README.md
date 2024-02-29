@@ -38,6 +38,14 @@ php artisan migrate
 php artisan serve
 ```
 
+9. Start vite to send emails
+
+```
+npm run dev
+```
+
+10. Go to <a href="https://github.com/RoY3rS04/laravel_jwt_auth_front">laravel_jwt_auth_front</a> and follow the instructions.
+
 ## Used Stack
 
 * Laravel
